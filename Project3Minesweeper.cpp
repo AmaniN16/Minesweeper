@@ -74,25 +74,30 @@ void DrawTiles(bool& toggle, Board& board, vector<vector<Tile>>& tiles, vector<M
             window.draw(faceSad);
 
             //Draw losing tiles
-            {
-                for (int x = 0; x < (board.windowHeight - 88) / 32; x++) {
-                    for (int y = 0; y < board.windowWidth / 32; y++) {
-                        for (int l = 0; l < board.mineCount; l++) {
-                            if (tiles[x][y].sprite.getGlobalBounds().contains(mines[l].xPos, mines[l].yPos)) {
-
-                                revTile.setPosition(tiles[x][y].xPos, tiles[x][y].yPos);
-                                window.draw(revTile);
-
-
-                            }
+            
+            for (int x = 0; x < (board.windowHeight - 88) / 32; x++) {
+                for (int y = 0; y < board.windowWidth / 32; y++) {
+                    for (int l = 0; l < board.mineCount; l++) {
+                        if (tiles[x][y].sprite.getGlobalBounds().contains(mines[l].xPos, mines[l].yPos)) {
+                            revTile.setPosition(tiles[x][y].xPos, tiles[x][y].yPos);
+                            window.draw(revTile);
                         }
 
+                        else if (tiles[x][y].hidden == false && !tiles[x][y].flagged) {
+                            revTile.setPosition(tiles[x][y].xPos, tiles[x][y].yPos);
+                            window.draw(revTile);
+                        }
+
+                        else
+                            window.draw(tiles[x][y].sprite);
                     }
                 }
             }
+            
             for (int m = 0; m < board.mineCount; m++) {
                 window.draw(mines[m].mine);
             }
+            return;
         }
     }
     
