@@ -60,11 +60,53 @@ void InitBoard(Board& board, vector<vector<Tile>>& tiles, sf::RenderWindow& wind
 
 }
 
-void DrawTiles(bool& toggle, Board& board, vector<vector<Tile>>& tiles, vector<Mine>& mines, sf::RenderWindow& window)
+void AdjacentMines(sf::Sprite& adjacent, Board& board, vector<vector<Tile>> &tiles) {
+    int num = 0;
+
+    for (int i = 0; i < (board.windowHeight - 88) / 32; i++) {
+        for (int j = 0; j < board.windowWidth / 32; j++) {
+            for (int m = 0; m < tiles[i][j].adjacentMines.size(); m++) {
+                num++;
+            }
+        }
+    }
+
+    if (num == 1)
+        adjacent.setTexture(TextureManager::GetTexture("number_1"));
+
+    else if (num == 2)
+        adjacent.setTexture(TextureManager::GetTexture("number_2"));
+
+    else if (num == 3)
+        adjacent.setTexture(TextureManager::GetTexture("number_3"));
+
+    else if (num == 4)
+        adjacent.setTexture(TextureManager::GetTexture("number_4"));
+
+    else if (num == 5)
+        adjacent.setTexture(TextureManager::GetTexture("number_5"));
+
+    else if (num == 6)
+        adjacent.setTexture(TextureManager::GetTexture("number_6"));
+
+    else if (num == 7)
+        adjacent.setTexture(TextureManager::GetTexture("number_7"));
+
+    else if (num == 8)
+        adjacent.setTexture(TextureManager::GetTexture("number_8"));
+
+    
+    
+}
+
+void DrawTiles(bool& toggle,Board& board, vector<vector<Tile>>& tiles, vector<Mine>& mines, sf::RenderWindow& window)
 {
 
     sf::Sprite revTile(TextureManager::GetTexture("tile_revealed"));
     sf::Sprite flag(TextureManager::GetTexture("flag"));
+    sf::Sprite adjacent;
+    //Texture for num adjacent mines for each tile.
+    AdjacentMines(adjacent, board, tiles);
 
     //Checking for loss
     for (int m = 0; m < board.mineCount; m++) {
@@ -425,27 +467,29 @@ void LeftMouseClicks(bool& toggle, int& click, Board& board, vector<vector<Tile>
 
     //Click mouse in tile space
     if (tileSpace.getGlobalBounds().contains(mousePos)) {
-        sf::Sprite revTile;
-        
+       
         for (int i = 0; i < (board.windowHeight - 88) / 32; i++) {
             for (int j = 0; j < board.windowWidth / 32; j++) {;
                 if (tiles[i][j].sprite.getGlobalBounds().contains(mousePos)) {
                     //Check if there is a mine there
 
-                    if (tiles[i][j].hidden = true) {
+                    if (tiles[i][j].hidden = true && !tiles[i][j].flagged) {
                         tiles[i][j].hidden = false;
 
                         for (int k = 0; k < board.mineCount; k++) {
 
                             if (tiles[i][j].sprite.getGlobalBounds().contains(mines[k].xPos, mines[k].yPos)) {
                                 mines[k].lost = true;
-                               
+
                             }
 
                         }
 
 
                     }
+
+                    else
+                        return;
                 }
 
 
@@ -571,6 +615,7 @@ int main()
 
     bool toggle = false;
     int numMines = boards[bc].mineCount;
+    int adjacent = 0;
     
 
     while (board.isOpen())
